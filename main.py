@@ -29,6 +29,28 @@ class Player(GameSprite):
         if keys_pressed[K_DOWN] and self.rect.y > 5:
             self.rect.y -= self.speed
 
+speed_x = 3
+speed_y = 3
+
+class Ball(GameSprite):
+    def update(self):
+        global finish
+        global speed_x
+        global speed_y
+        if finish != True:
+            self.rect.x += speed_x
+            self.rect.y += speed_y
+        if self.rect.y > win_height-50 or self.rect.y < 0:
+            speed_y *= -1
+        if sprite.collide_rect(player1, self) or sprite.collide_rect(player2, self):
+            speed_x *= -1
+        if self.rect.x < 0:
+            finish = True
+            mw.blit(lose1, (200, 200))
+        if self.rect.x > 700:
+            finish = True
+            mw.blit(lose2, (200, 200))
+
 
 
 win_width = 700
@@ -64,14 +86,11 @@ lose2 = font1.render(
 player1 = Player('rocket.png', 10, 50, 5, 20, 150)
 player2 = Player('rocket.png', 610, 50, 5, 20, 150)
 
-ball = GameSprite('ball.png', 0, 0, 4, 65, 65)
+ball = Ball('ball.png', 0, 250, 4, 65, 65)
 
 
 game = True
 finish = False
-
-speed_x = 3
-speed_y = 3
 
 while game:
     mw.blit(background, (0, 0))
@@ -80,21 +99,9 @@ while game:
     player2.reset()
     player2.update2()
     ball.reset()
+    ball.update()
     for e in event.get():
         if e.type == QUIT:
             game = False
-    if finish != True:
-        ball.rect.x += speed_x
-        ball.rect.y += speed_y
-    if ball.rect.y > win_height-50 or ball.rect.y < 0:
-        speed_y *= -1
-    if sprite.collide_rect(player1, ball) or sprite.collide_rect(player2, ball):
-        speed_x *= -1
-    if ball.rect.x < 0:
-        finish = True
-        mw.blit(lose1, (200, 200))
-    if ball.rect.x > 700:
-        finish = True
-        mw.blit(lose2, (200, 200))
     display.update()
     clock.tick(FPS)
